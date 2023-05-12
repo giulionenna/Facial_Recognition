@@ -2,6 +2,7 @@ import pgm
 import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+from sklearn.preprocessing import normalize
 
 # --------- Import faces ----------
 path = 'archive/archive'
@@ -9,6 +10,7 @@ num_subjects = 40
 num_faces_per_subject = 10
 train_test_ratio = 0.6
 variance_threshold = 0.8
+acceptance_threshold =  0.5
 
 train_set_size = int(num_subjects*num_faces_per_subject*train_test_ratio)
 test_set_size = int(num_subjects*num_faces_per_subject*(1-train_test_ratio))
@@ -50,8 +52,14 @@ explained_variance_cum = (eig_val/eig_val.sum()).cumsum() #computing the cumulat
 threshold_mask = explained_variance_cum<variance_threshold
 num_pcs_kept = (threshold_mask).sum()
 print('Using variance threshold: '+str(variance_threshold)+'. Number of PCs kept: '+str(num_pcs_kept)+'/'+str(train_set_size))
-eigenfaces = faces_train_center.transpose() @ eig_vec[:,threshold_mask]
-faces_train_projected = faces_train @ eigenfaces
+eigenfaces = faces_train_center.transpose() @ eig_vec[:,threshold_mask] #computing eigenvalues of the original covariance matrix
+eigenfaces = normalize(eigenfaces, axis=0, norm='l2') #normalize by columns the eigenvectors (eigenfaces is now an orthonormal matrix)
+faces_train_projected = faces_train_center @ eigenfaces
 
 
-print('DEBUG')
+#--------- TEST PHASE -------------
+faces_test_centered = faces_test-mean_face
+faces_test_projected = faces_test_centered @ eigenfaces #project test faces onto eigenspace
+faces_test_projected_back = faces_test_projected @ eigenfaces.transpose() #project back onto face space
+distance_from_face_space = np.linalg.norm(faces_test_centered-faces_test_projected_back, axis=1) #compute distance from eigenspace for each face
+print('Test phase')
