@@ -10,7 +10,7 @@ num_subjects = 40
 num_faces_per_subject = 10
 train_test_ratio = 0.6
 variance_threshold = 0.8
-acceptance_threshold =  0.5
+acceptance_threshold =  4*10**3
 
 train_set_size = int(num_subjects*num_faces_per_subject*train_test_ratio)
 test_set_size = int(num_subjects*num_faces_per_subject*(1-train_test_ratio))
@@ -62,4 +62,17 @@ faces_test_centered = faces_test-mean_face
 faces_test_projected = faces_test_centered @ eigenfaces #project test faces onto eigenspace
 faces_test_projected_back = faces_test_projected @ eigenfaces.transpose() #project back onto face space
 distance_from_face_space = np.linalg.norm(faces_test_centered-faces_test_projected_back, axis=1) #compute distance from eigenspace for each face
+
+predicted = -1*np.ones(test_set_size)
+
+for i in range(test_set_size):
+   face = faces_test_projected[i]
+   if distance_from_face_space[i]>acceptance_threshold:
+       continue
+   dist = np.linalg.norm(faces_train_projected - face, axis=1)
+   idx = np.argmin(dist)
+   predicted[i] = idx // int(num_faces_per_subject*train_test_ratio)
+
+   
+       
 print('Test phase')
