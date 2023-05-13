@@ -71,7 +71,7 @@ for variance_threshold in variance_threshold_vec:
     eigenfaces = faces_train_center.transpose() @ eig_vec[:,threshold_mask] #computing eigenvalues of the original covariance matrix
     eigenfaces = normalize(eigenfaces, axis=0, norm='l2') #normalize by columns the eigenvectors (eigenfaces is now an orthonormal matrix)
     faces_train_projected = faces_train_center @ eigenfaces
-
+    plt.imshow(eigenfaces[:,0].reshape([112,92]), cmap='gray')
 
     #--------- TEST PHASE -------------
     faces_test_centered = faces_test-mean_face

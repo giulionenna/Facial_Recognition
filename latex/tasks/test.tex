@@ -1,0 +1,59 @@
+Siano \(\{g_1, g_2, \dots g_K\}\) le facce da utilizzare per il test set. Sono anch'esse vettori \( g_i \in \mathbb{R}^{mn}\) per \(i = 1, \dots K\). Sulla falsa riga di quanto fatto per il training, possiamo centrare ciascuna faccia rispetto alla faccia media e definire la matrice delle facce di test:
+\[
+\psi_i = g_i - \tilde{f} \quad i = 1,\dots K    
+\]
+\[\Psi^T = \begin{bmatrix}
+    \psi_1^T \\
+    \psi_2^T \\
+    \vdots \\
+    \psi_K^T
+\end{bmatrix} \in \mathbb{R}^{K \times mn}
+    \]
+Grazie alla matrice \(V'\) calcolata in fase di training possiamo proiettare ciascuna faccia di test sullo spazio generato da \(V'\):
+\[
+\psi_i' = V'^T \psi_i \quad i = 1,\dots K
+\]
+\[
+    \Psi'^T = \Psi^T V'
+\]
+Dove \(\psi'_i \in \mathbb{R}^{L'}\) e \(\Psi'^T \in \mathbb{R}^{K \times L'}\). \\
+Una volta calcolate le proiezioni di ciascuna faccia sullo spazio generato dalle colonne di \(V'\), è possibile calcolarne la rappresentazione  rispetto alla base canonica di \(\mathbb{R}^{mn}\) utilizzando:
+\[
+\psi''_i = V' \psi_i \quad i=1, \dots K    
+\]
+\[
+\Psi''^T = \Psi'^T V'^T    
+\]
+Dove \(\psi''_i \in \mathbb{R}^{mn}\) e \(\Psi''^T \in \mathbb{R}^{K \times mn}\). \\
+A questo punto è possibile calcolare la distanza \(\epsilon\) tra ciascuna faccia di test e lo spazio generato da \(V'\), infatti:
+\[
+\epsilon_i = \| \psi_i - \psi''_i \| \quad i = 1,\dots K     
+\]
+\begin{lstlisting}[language=Python]
+faces_test_centered = faces_test-mean_face
+#project test faces onto eigenspace
+faces_test_projected = faces_test_centered @ eigenfaces 
+#project back onto face space
+faces_test_projected_back = faces_test_projected @ eigenfaces.transpose() 
+#compute distance from eigenspace for each face
+distance_from_face_space = np.linalg.norm(faces_test_centered-faces_test_projected_back, axis=1) 
+\end{lstlisting}
+Dato quindi un threshold di accettazione \(\Theta\), è possibile verificare se una faccia appartiene al database utilizzato per generare l'autospazio controllando se \(\epsilon_i < \Theta\).
+\newpage
+\begin{mdframed}
+    Un possibile metodo per calcolare il threshold \(\Theta\) potrebbe essere il seguente: si esclude un soggetto dal database sia di training che di test, si calcola la distanza della sua faccia dall'autospazio e si utilizza tale distanza come threshold \(\Theta\). Variazioni più accurate potrebbero coinvolgere l'utilizzo di più facce e più soggetti non presenti nel database per il calcolo di \(\Theta\). Il codice presente in appendice implementa un calcolo approssimato di \(\Theta\) escludendo le 10 facce dell'ultimo soggetto dal dataset.
+\end{mdframed}
+Verificato che una faccia sia presente nel dataset sarà quindi possibile predirre a quale soggetto corrisponde la faccia \(\psi'\) individuando la faccia \(\phi'^*\) più vicina nell'autospazio. In particolare se \(\phi'^*\) è la faccia appartenente al soggetto \(s\) più vicina a \(\psi'\) nell'autospazio, allora l'algoritmo assegnerà alla faccia \(\psi'\) il soggetto \(s\) come predizione. 
+\begin{lstlisting}[language = Python]
+for i in range(test_set_size):#for each face in the test set
+    face = faces_test_projected[i]
+    #if the face is too far from eigenspace
+    if distance_from_face_space[i]>acceptance_threshold: 
+        continue #skip face
+    #compute distance of the face with every other face in the eigenspace
+    dist = np.linalg.norm(faces_train_projected - face, axis=1) 
+    #find the nearest face
+    idx = np.argmin(dist) 
+    #predict using idx of the nearest face
+    predicted[i] = idx // int(num_faces_per_subject*train_test_ratio) 
+\end{lstlisting}
