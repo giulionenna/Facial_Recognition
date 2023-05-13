@@ -6,11 +6,13 @@ from sklearn.preprocessing import normalize
 
 # --------- Import faces ----------
 path = 'archive/archive'
-num_subjects = 40
+num_subjects = 39 #leave one out for out-of-training experiment
+left_out = True #take the last subject for threshold assessment
 num_faces_per_subject = 10
 train_test_ratio = 0.6
 variance_threshold_vec = [0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95]
 acceptance_threshold =  6*10**3
+acceptance_tolerance = 1.3
 plot_flag = False
 
 train_set_size = int(num_subjects*num_faces_per_subject*train_test_ratio)
@@ -18,9 +20,7 @@ test_set_size = int(num_subjects*num_faces_per_subject*(1-train_test_ratio))
 #compute the size of every image by checking the first
 f=path+'/s1/1.pgm'
 img = pgm.read_pgm(f)
-size = img.shape[0]*img.shape[1] 
-
-
+size = img.shape[0]*img.shape[1]
 
 faces_all = np.zeros([num_subjects*num_faces_per_subject, size])
 faces_train = np.zeros([train_set_size, size])
@@ -35,14 +35,25 @@ for i in range(num_subjects): #for each subject
         subject_faces[j,:] = img 
     
     faces_all[i*num_faces_per_subject:(i+1)*num_faces_per_subject,:] = subject_faces
-    faces_train[i*int(num_faces_per_subject*train_test_ratio):(i+1)*int(num_faces_per_subject*train_test_ratio),:] = subject_faces[0:int(num_faces_per_subject*train_test_ratio),:]
-    faces_test[i*int(num_faces_per_subject*(1-train_test_ratio)):(i+1)*int(num_faces_per_subject*(1-train_test_ratio)),:] = subject_faces[int(num_faces_per_subject*train_test_ratio):num_faces_per_subject,:]
+    faces_train[i*int(num_faces_per_subject*train_test_ratio):(i+1)*int(num_faces_per_subject*train_test_ratio),:] = \
+        subject_faces[0:int(num_faces_per_subject*train_test_ratio),:]
+    faces_test[i*int(num_faces_per_subject*(1-train_test_ratio)):(i+1)*int(num_faces_per_subject*(1-train_test_ratio)),:] = \
+          subject_faces[int(num_faces_per_subject*train_test_ratio):num_faces_per_subject,:]
+
+#--- importing the subject left out of the dataset---
+if left_out:
+    left_out_subject = np.zeros([num_faces_per_subject, size])
+    for j in range(num_faces_per_subject):
+        f=path+'/s'+str(num_subjects+1)+'/'+str(j+1)+'.pgm'
+        img = pgm.read_pgm(f)
+        img= img.reshape(size)
+        left_out_subject[j,:] = img
 
 # -------- Training phase ---------------
 L =  faces_train.shape[0]
 mean_face = faces_train.mean(axis = 0) #compute mean face
-faces_train_center = faces_train-mean_face #centering the dataset
-cov_mat_mod = 1/L * (faces_train_center @ faces_train_center.transpose()) #computing covariance matrix
+faces_train_center = faces_train-mean_face #centering the dataset (Phi^T)
+cov_mat_mod = 1/L * (faces_train_center @ faces_train_center.transpose()) #computing modified covariance matrix
 print('Computing eigenvalues of covariance matrix...')
 eig_val, eig_vec = np.linalg.eig(cov_mat_mod) #computing eigenvalues and eigenvectors
 sort_mask = np.argsort(eig_val)[::-1] #sorting eigenvalues and eigenvectors in decreasing order
@@ -61,12 +72,21 @@ for variance_threshold in variance_threshold_vec:
     eigenfaces = normalize(eigenfaces, axis=0, norm='l2') #normalize by columns the eigenvectors (eigenfaces is now an orthonormal matrix)
     faces_train_projected = faces_train_center @ eigenfaces
 
+
     #--------- TEST PHASE -------------
     faces_test_centered = faces_test-mean_face
     faces_test_projected = faces_test_centered @ eigenfaces #project test faces onto eigenspace
     faces_test_projected_back = faces_test_projected @ eigenfaces.transpose() #project back onto face space
     distance_from_face_space = np.linalg.norm(faces_test_centered-faces_test_projected_back, axis=1) #compute distance from eigenspace for each face
 
+    #---acceptance threshold assessment---
+    left_out_subject_centered = left_out_subject - mean_face
+    left_out_subject_projected = left_out_subject_centered @ eigenfaces #project left out subject face onto eigenspace
+    left_out_subject_projected_back = left_out_subject_projected @ eigenfaces.transpose() #project back onto face space
+    left_out_distance = np.linalg.norm(left_out_subject_centered - left_out_subject_projected_back, axis=1)
+    acceptance_threshold = acceptance_tolerance*left_out_distance.mean() #distance of a face not present among training subjects
+
+    #---prediction---
     predicted = -1*np.ones(test_set_size) #init prediction vector
     true_faces = np.zeros(test_set_size) #init true classification idx
     test_faces_per_subject = int(num_faces_per_subject*(1-train_test_ratio))

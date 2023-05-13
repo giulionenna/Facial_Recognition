@@ -1,0 +1,198 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+
+\usepackage{geometry}
+\usepackage{bm}
+\geometry{a4paper}
+\usepackage{latexsym}
+%\usepackage[dvips]{graphicx}
+\usepackage{epsfig}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{eucal}
+\usepackage{mathrsfs}
+\usepackage{wasysym}
+\usepackage{setspace}
+\usepackage{float}
+\usepackage{color}
+\usepackage{rotating}
+\usepackage{stmaryrd}
+\usepackage{lineno}
+
+\numberwithin{equation}{section}
+\frenchspacing
+%%
+\usepackage{amsthm}
+
+
+%%%%INSERITI ADESSO%%%%
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{mathrsfs}
+\usepackage{eucal}  
+\theoremstyle{definition}
+\usepackage{accents}
+\usepackage{array}
+\usepackage{cases}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{caption}
+\usepackage{cancel}
+\usepackage{bbm}
+\usepackage{subfig}
+\usepackage{enumitem}
+\usepackage{movie15}
+ \usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{tabularx}
+\usepackage{longtable}
+ 
+% Font Management
+\usepackage[T1]{fontenc}       % 8 bit font encoding: includes all accents
+\usepackage{bm}                % alternative to \bs provided by package amsmath
+\usepackage{bbm}               % alternative to \mathbb;  usage: \mathbbm{}
+%\usepackage[mathscr]{eucal}    % alternative to \mathcal; usage: \mathcal{}
+\usepackage{color}             % for text in colour
+\usepackage{verbatim}          % environment for commenting out blocks of text
+%\usepackage{exscale}           % needed to scale cmdx fonts
+%\usepackage{ae,aecompl}        % see http://www.ctan.org/tex-archive/fonts/ae
+%%%%%%%%%%%%%%%%%%
+
+
+\theoremstyle{plain}
+\newtheorem{thm}{Theorem}[section]
+\newtheorem{lem}[thm]{Lemma}
+\newtheorem{prop}[thm]{Proposizione}
+\newtheorem*{cor}{Corollario}
+
+\theoremstyle{definition}
+\newtheorem{defn}{Definizione}[section]
+\newtheorem{conj}{Congettura}[section]
+\newtheorem{exmp}{Esempio}[section]
+
+\theoremstyle{remark}
+\newtheorem*{rem}{Osservazione}
+\newtheorem*{note}{Nota}
+
+\DeclareMathOperator*{\argmin}{argmin}
+\DeclareMathOperator*{\argmax}{argmax}
+
+\newcommand{\dom}{\mathrm{dom}}
+\newcommand{\im}{\mathrm{im}}
+\newcommand{\sign}{\mathrm{sign}}
+\newcommand{\abs}{\mathrm{abs}}
+\newcommand{\e}{\mathrm{exp}}
+
+\setlength{\textwidth}{15 cm}
+\setlength{\textheight}{23.5 cm}
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+
+\usepackage{hyperref}
+\hypersetup{%
+    pdfpagemode={UseOutlines},
+    bookmarksopen,
+    pdfstartview={FitH},
+    colorlinks,
+    linkcolor={blue},
+    citecolor={blue},
+    urlcolor={blue}
+  }
+
+%%%%%%% use PDFLATEX 
+
+\usepackage{lipsum} %to insert random text
+
+\usepackage{geometry} %for the margins
+\newcommand\fillin[1][4cm]{\makebox[#1]{\dotfill}} %for the dotted line in the frontispiace
+
+\usepackage{dcolumn}
+\newcolumntype{d}{D{.}{.}{-1} } %to vetical align numbers in tables, along the decimal dot
+
+\usepackage{amsmath}
+
+
+
+%%%%%%% Local definitions
+\newtheorem{osservazione}{Osservazione}% Standard LaTeX
+\newtheorem{observation}{Observation}% Standard LaTeX
+
+\newcommand{\BR}{\mathscr{B}_{\mathrm{R}}}
+\newcommand{\T}[2]{T_{#2}#1}
+\newcommand{\cT}[2]{T_{#2}^{*}#1}
+\newcommand{\pder}[2]{\frac{\partial #1}{\partial #2}}
+
+				 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% Inserito il codice Matlab
+%
+\usepackage{listings}
+\usepackage{hyperref}
+\usepackage{xcolor}
+
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+
+\lstdefinestyle{mystyle}{
+    backgroundcolor=\color{backcolour},   
+    commentstyle=\color{codegreen},
+    keywordstyle=\color{magenta},
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},
+    basicstyle=\ttfamily\footnotesize,
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    numbers=left,                    
+    numbersep=4pt,                  
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2
+}
+
+\lstset{style=mystyle}
+
+
+
+\title{Analisi tempo-frequenza e multiscala}
+\author{Giulio Nenna - 292399}
+\date{Homework 1 - Riconoscimento facciale attraverso "Eigenfaces"}
+\begin{document}
+\maketitle
+\noindent Lo scopo dell'Homework è quello di implementare e testare l'algoritmo "\textit{Eigenfaces}" per il riconoscimento facciale attraverso uno script Python. Nell'elaborato verranno presentati gli strumenti teorici a supporto dell'algoritmo, frammenti di codice salienti utilizzati e risultati computazionali ottenuti.
+\\
+\\
+\noindent Il dataset presenta 10 ritratti facciali per ciascuno dei 40 soggetti presenti al suo interno. Vengono utilizzate immagini in scala di grigio di dimensione \(m \times n \) pixels con \(m = 112\) e \(n = 92\). Alcuni esempi di immagini utilizzate sono mostrati in Figura \ref{subject_es} 
+
+\begin{figure}[H]
+  \centering
+  \subfloat[1][Soggetto 1]{\includegraphics[scale = 0.37]{pictures/test_subject_1.pdf}}
+  \subfloat[2][Soggetto 2]{\includegraphics[scale = 0.37]{pictures/test_subject_2.pdf}}
+  \subfloat[3][Soggetto 31]{\includegraphics[scale = 0.37]{pictures/test_subject_31.pdf}}
+  \caption{Alcuni esempi di immagini presenti nel dataset}
+  \label{subject_es}
+\end{figure}
+
+\noindent L'algoritmo si distingue per la fase di \textbf{Training} e quella di \textbf{Testing}.
+\section{Training phase}
+\input{tasks/training.tex}
+
+%\bibliographystyle{plain} % We choose the "plain" reference style
+%\bibliography{refs} % Entries are in the refs.bib file
+
+
+\end{document}
