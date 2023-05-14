@@ -72,7 +72,9 @@ La particolare base che stiamo cercando sarà quindi data da  \(V = \{v_1, \dots
 \[u_i \text{ autovettore di } \Phi^T\Phi \text{ relativo all'autovalore } \lambda_i ,\]
 \[\lambda_1 \geq \lambda_2 \geq \dots \geq \lambda_L.\]
 Una volta ottenuta la base \(V\) è possibile scegliere le sue prime \(L'<L\) componenti ottenendo una base \(V' = \{v_1, \dots , v_{L'}\}\) che approssima \(V\). È possibile quantificare la perdita di informazioni se si utilizza la base \(V'\) piuttosto che \(V\) per rappresentare le immagini. In particolare possiamo decidere il numero di componenti trattenute \(L'\) calcolando la varianza trattenuta dalla base:
-\[\frac{ \sum \limits_{l=1}^{L'} \lambda_l}{ \sum \limits_{l=1}^{L}\lambda_l } > \alpha\]
+\begin{equation}\label{variance}
+    \frac{ \sum \limits_{l=1}^{L'} \lambda_l}{ \sum \limits_{l=1}^{L}\lambda_l } > \alpha  
+\end{equation}
 dove \(\alpha \in [0,1]\) è una soglia decisa a priori. Al crescere di \(\alpha\) crescerà il numero di componenti necessarie a trattenere la varianza desiderata.
 Quanto spiegato fin ora può essere eseguito attraverso i seguenti comandi:
 

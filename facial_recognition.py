@@ -4,6 +4,12 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.preprocessing import normalize
 
+plt.rcParams.update({
+    #"text.usetex": True,
+    "font.family": "serif",
+    #"font.sans-serif": "Helvetica",
+})
+
 # --------- Import faces ----------
 path = 'archive/archive'
 num_subjects = 39 #leave one out for out-of-training experiment
@@ -13,7 +19,7 @@ train_test_ratio = 0.6
 variance_threshold_vec = [0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95]
 acceptance_threshold =  6*10**3
 acceptance_tolerance = 1.3
-plot_flag = False
+plot_flag = True
 
 train_set_size = int(num_subjects*num_faces_per_subject*train_test_ratio)
 test_set_size = int(num_subjects*num_faces_per_subject*(1-train_test_ratio))
@@ -61,12 +67,21 @@ eig_val = eig_val[sort_mask]
 eig_vec = eig_vec[:, sort_mask]
 
 explained_variance_cum = (eig_val/eig_val.sum()).cumsum() #computing the cumulative explained variance
-
+if plot_flag:
+    fig, axs = plt.subplots(1,1)
+    fig.set_size_inches(8,4)
+    axs.plot(explained_variance_cum)
+    axs.grid(True)
+    plt.title('Varianza Trattenuta per numero di componenti')
+    plt.savefig('Latex/pictures/variance_cum.pdf')
+#    plt.show()
 count = 0
 accuracy = np.zeros(len(variance_threshold_vec))
+num_pcs_kept_vec = np.zeros(len(variance_threshold_vec), dtype=int)
 for variance_threshold in variance_threshold_vec:
     threshold_mask = explained_variance_cum<variance_threshold
     num_pcs_kept = (threshold_mask).sum()
+    num_pcs_kept_vec[count] = int(num_pcs_kept)
     print('Using variance threshold: '+str(variance_threshold)+'\t Number of PCs kept: '+str(num_pcs_kept)+'/'+str(train_set_size))
     eigenfaces = faces_train_center.transpose() @ eig_vec[:,threshold_mask] #computing eigenvalues of the original covariance matrix
     eigenfaces = normalize(eigenfaces, axis=0, norm='l2') #normalize by columns the eigenvectors (eigenfaces is now an orthonormal matrix)
@@ -98,10 +113,13 @@ for variance_threshold in variance_threshold_vec:
         train_faces_per_subject = int(num_faces_per_subject*(train_test_ratio))
         for i in range(num_subjects):
             train_idx[i*train_faces_per_subject:(i+1)*train_faces_per_subject] = i
-
-        plt.scatter(faces_train_projected[:,0], faces_train_projected[:,1], c=train_idx)
-        plt.scatter(faces_test_projected[:,0], faces_test_projected[:,1], c=true_faces, marker='x')
-        plt.show()
+        
+        fig, axs = plt.subplots(1,1)
+        fig.set_size_inches(6,6)
+        axs.scatter(faces_train_projected[:,0], faces_train_projected[:,1], c=train_idx)
+        axs.scatter(faces_test_projected[:,0], faces_test_projected[:,1], c=true_faces, marker='x')
+        plt.savefig('Latex/pictures/visualization.pdf')
+# plt.show()
 
     #Prediction
     for i in range(test_set_size):#for each face in the test set
@@ -119,5 +137,18 @@ for variance_threshold in variance_threshold_vec:
 
 plt.plot(variance_threshold_vec, accuracy)
 plt.show()
-        
-    
+
+if(plot_flag and num_pcs_kept>1):
+    fig = plt.figure()
+    ax1 = fig.add_subplot(111)
+    ax2 = ax1.twiny()
+    fig.set_size_inches(8,4)
+    ax1.plot(variance_threshold_vec, accuracy)
+    ax1.set_xlabel('Varianza trattenuta')
+    ax1.set_ylabel('Accuratezza')
+    ax1.grid(True)
+    ax2.set_xlim(ax1.get_xlim())
+    ax2.set_xticks(variance_threshold_vec, num_pcs_kept_vec)
+    ax2.set_xlabel('Numero di Compomenti Principali usate')
+    plt.savefig('Latex/pictures/accuracy_vs_pcs.pdf')
+#       plt.show()        
