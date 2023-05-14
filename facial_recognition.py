@@ -19,7 +19,7 @@ train_test_ratio = 0.6
 variance_threshold_vec = [0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 0.95]
 acceptance_threshold =  6*10**3
 acceptance_tolerance = 1.3
-plot_flag = True
+plot_flag = False #If you want plots and to save them
 
 train_set_size = int(num_subjects*num_faces_per_subject*train_test_ratio)
 test_set_size = int(num_subjects*num_faces_per_subject*(1-train_test_ratio))
@@ -41,10 +41,8 @@ for i in range(num_subjects): #for each subject
         subject_faces[j,:] = img 
     
     faces_all[i*num_faces_per_subject:(i+1)*num_faces_per_subject,:] = subject_faces
-    faces_train[i*int(num_faces_per_subject*train_test_ratio):(i+1)*int(num_faces_per_subject*train_test_ratio),:] = \
-        subject_faces[0:int(num_faces_per_subject*train_test_ratio),:]
-    faces_test[i*int(num_faces_per_subject*(1-train_test_ratio)):(i+1)*int(num_faces_per_subject*(1-train_test_ratio)),:] = \
-          subject_faces[int(num_faces_per_subject*train_test_ratio):num_faces_per_subject,:]
+    faces_train[i*int(num_faces_per_subject*train_test_ratio):(i+1)*int(num_faces_per_subject*train_test_ratio),:] = subject_faces[0:int(num_faces_per_subject*train_test_ratio),:]
+    faces_test[i*int(num_faces_per_subject*(1-train_test_ratio)):(i+1)*int(num_faces_per_subject*(1-train_test_ratio)),:] = subject_faces[int(num_faces_per_subject*train_test_ratio):num_faces_per_subject,:]
 
 #--- importing the subject left out of the dataset---
 if left_out:
@@ -67,6 +65,7 @@ eig_val = eig_val[sort_mask]
 eig_vec = eig_vec[:, sort_mask]
 
 explained_variance_cum = (eig_val/eig_val.sum()).cumsum() #computing the cumulative explained variance
+
 if plot_flag:
     fig, axs = plt.subplots(1,1)
     fig.set_size_inches(8,4)
@@ -74,19 +73,19 @@ if plot_flag:
     axs.grid(True)
     plt.title('Varianza Trattenuta per numero di componenti')
     plt.savefig('Latex/pictures/variance_cum.pdf')
-#    plt.show()
+
 count = 0
 accuracy = np.zeros(len(variance_threshold_vec))
 num_pcs_kept_vec = np.zeros(len(variance_threshold_vec), dtype=int)
-for variance_threshold in variance_threshold_vec:
-    threshold_mask = explained_variance_cum<variance_threshold
+
+for variance_threshold in variance_threshold_vec: #for each variance threshold
+    threshold_mask = explained_variance_cum<variance_threshold #select number of pcs to keep
     num_pcs_kept = (threshold_mask).sum()
     num_pcs_kept_vec[count] = int(num_pcs_kept)
     print('Using variance threshold: '+str(variance_threshold)+'\t Number of PCs kept: '+str(num_pcs_kept)+'/'+str(train_set_size))
     eigenfaces = faces_train_center.transpose() @ eig_vec[:,threshold_mask] #computing eigenvalues of the original covariance matrix
     eigenfaces = normalize(eigenfaces, axis=0, norm='l2') #normalize by columns the eigenvectors (eigenfaces is now an orthonormal matrix)
     faces_train_projected = faces_train_center @ eigenfaces
-    plt.imshow(eigenfaces[:,0].reshape([112,92]), cmap='gray')
 
     #--------- TEST PHASE -------------
     faces_test_centered = faces_test-mean_face
@@ -95,11 +94,12 @@ for variance_threshold in variance_threshold_vec:
     distance_from_face_space = np.linalg.norm(faces_test_centered-faces_test_projected_back, axis=1) #compute distance from eigenspace for each face
 
     #---acceptance threshold assessment---
-    left_out_subject_centered = left_out_subject - mean_face
-    left_out_subject_projected = left_out_subject_centered @ eigenfaces #project left out subject face onto eigenspace
-    left_out_subject_projected_back = left_out_subject_projected @ eigenfaces.transpose() #project back onto face space
-    left_out_distance = np.linalg.norm(left_out_subject_centered - left_out_subject_projected_back, axis=1)
-    acceptance_threshold = acceptance_tolerance*left_out_distance.mean() #distance of a face not present among training subjects
+    if left_out:
+        left_out_subject_centered = left_out_subject - mean_face
+        left_out_subject_projected = left_out_subject_centered @ eigenfaces #project left out subject face onto eigenspace
+        left_out_subject_projected_back = left_out_subject_projected @ eigenfaces.transpose() #project back onto face space
+        left_out_distance = np.linalg.norm(left_out_subject_centered - left_out_subject_projected_back, axis=1)
+        acceptance_threshold = acceptance_tolerance*left_out_distance.mean() #distance of a face not present among training subjects
 
     #---prediction---
     predicted = -1*np.ones(test_set_size) #init prediction vector
@@ -119,7 +119,7 @@ for variance_threshold in variance_threshold_vec:
         axs.scatter(faces_train_projected[:,0], faces_train_projected[:,1], c=train_idx)
         axs.scatter(faces_test_projected[:,0], faces_test_projected[:,1], c=true_faces, marker='x')
         plt.savefig('Latex/pictures/visualization.pdf')
-# plt.show()
+
 
     #Prediction
     for i in range(test_set_size):#for each face in the test set
@@ -150,5 +150,4 @@ if(plot_flag and num_pcs_kept>1):
     ax2.set_xlim(ax1.get_xlim())
     ax2.set_xticks(variance_threshold_vec, num_pcs_kept_vec)
     ax2.set_xlabel('Numero di Compomenti Principali usate')
-    plt.savefig('Latex/pictures/accuracy_vs_pcs.pdf')
-#       plt.show()        
+    plt.savefig('Latex/pictures/accuracy_vs_pcs.pdf')    

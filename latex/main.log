@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.23 (TeX Live 2021/W32TeX) (preloaded format=pdflatex 2021.7.4)  14 MAY 2023 13:58
+This is pdfTeX, Version 3.141592653-2.6-1.40.23 (TeX Live 2021/W32TeX) (preloaded format=pdflatex 2021.7.4)  14 MAY 2023 21:08
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -899,12 +899,12 @@ Package mdframed Info: mdframed detected package amsthm
 (mdframed)              on input line 44.
 Package mdframed Info: Not enough space on this page on input line 45.
 ) (./tasks/results.tex
-<pictures/variance_cum.pdf, id=126, 578.16pt x 289.08pt>
+<pictures/variance_cum.pdf, id=127, 578.16pt x 289.08pt>
 File: pictures/variance_cum.pdf Graphic file (type pdf)
 <use pictures/variance_cum.pdf>
 Package pdftex.def Info: pictures/variance_cum.pdf  used on input line 4.
 (pdftex.def)             Requested size: 404.70924pt x 202.35461pt.
-<pictures/accuracy_vs_pcs.pdf, id=129, 578.16pt x 289.08pt>
+<pictures/accuracy_vs_pcs.pdf, id=130, 578.16pt x 289.08pt>
 File: pictures/accuracy_vs_pcs.pdf Graphic file (type pdf)
 <use pictures/accuracy_vs_pcs.pdf>
 Package pdftex.def Info: pictures/accuracy_vs_pcs.pdf  used on input line 14.
@@ -920,7 +920,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 18--23
  []
 
 [6 <./pictures/accuracy_vs_pcs.pdf>]
-<pictures/visualization.pdf, id=222, 433.62pt x 433.62pt>
+<pictures/visualization.pdf, id=223, 433.62pt x 433.62pt>
 File: pictures/visualization.pdf Graphic file (type pdf)
 <use pictures/visualization.pdf>
 Package pdftex.def Info: pictures/visualization.pdf  used on input line 33.
@@ -943,12 +943,12 @@ Here is how much of TeX's memory you used:
  35404 multiletter control sequences out of 15000+600000
  473036 words of font info for 114 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 73i,10n,81p,918b,2049s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 73i,10n,81p,1006b,2049s stack positions out of 5000i,500n,10000p,200000b,80000s
 {c:/texlive/2021/texmf-dist/fonts/enc/dvips/lm/lm-mathsy.enc}{c:/texlive/2021/texmf-dist/fonts/enc/dvips/lm/lm-rm.enc}{c:/texlive/2021/texmf-dist/fonts/enc/dvips/lm/lm-mathex.enc}{c:/texlive/2021/texmf-dist/fonts/enc/dvips/lm/lm-ec.enc}{c:/texlive/2021/texmf-dist/fonts/enc/dvips/lm/lm-mathit.enc}<c:/texlive/2021/texmf-dist/fonts/type1/public/lm/lmbx10.pfb><c:/texlive/2021/texmf-dist/fonts/type1/public/lm/lmbx12.pfb><c:/texlive/2021/texmf-dist/fonts/type1/public/lm/lmex10.pfb><c:/texlive/2021/texmf-dist/fonts/type1/public/lm/lmmi10.pfb><c:/texlive/2021/texmf-dist/fonts/type1/public/lm/lmmi7.pfb><c:/texlive/2021/texmf-dist/fonts/type1/public/lm/lmr10.pfb><c:/texlive/2021/texmf-dist/fonts/type1/public/lm/lmr12.pfb><c:/texlive/2021/texmf-dist/fonts/type1/public/lm/lmr17.pfb><c:/texlive/2021/texmf-dist/fonts/type1/public/lm/lmr5.pfb><c:/texlive/2021/texmf-dist/fonts/type1/public/lm/lmr7.pfb><c:/texlive/2021/texmf-dist/fonts/type1/public/lm/lmr8.pfb><c:/texlive/2021/texmf-dist/fonts/type1/public/lm/lmri10.pfb><c:/texlive/2021/texmf-dist/fonts/type1/public/lm/lmsy10.pfb><c:/texlive/2021/texmf-dist/fonts/type1/public/lm/lmsy5.pfb><c:/texlive/2021/texmf-dist/fonts/type1/public/lm/lmsy7.pfb><c:/texlive/2021/texmf-dist/fonts/type1/public/lm/lmtt8.pfb><c:/texlive/2021/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb>
-Output written on main.pdf (7 pages, 508483 bytes).
+Output written on main.pdf (7 pages, 508532 bytes).
 PDF statistics:
- 345 PDF objects out of 1000 (max. 8388607)
- 221 compressed objects within 3 object streams
+ 346 PDF objects out of 1000 (max. 8388607)
+ 222 compressed objects within 3 object streams
  86 named destinations out of 1000 (max. 500000)
  55 words of extra memory for PDF output out of 10000 (max. 10000000)
 
